@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Coin-hive Demo</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
+</head>
+<body>
+<div class="container mt-3">
+    <h1>Coin-Hive Demo</h1>
+    <br />
+    <div class="alert alert-danger" role="alert">
+        На этой странице будут использоваться ресурсы процессора для майнинга, если Вы не согласны или не понимаете, что это, пожалуйста, покиньте эту страницу.
+    </div>
+    <br /><br />
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">JavaScript Miner</h4>
+            <p>Потоки:
+                <button id="thread_minus" type="button" class="btn btn-danger btn-sm">-</button>
+                <span id="thread_count">50000</span>
+                <button id="thread_plus" type="button" class="btn btn-primary btn-sm">+</button>
+            </p>
+            <p>Статус: <span id="miner_status">Остановлено</span></p>
+            <p>Хэшрейт: <span id="hash_rate">0</span> H/s</p>
+            <p>Общие хэши: <span id="total_hashes">0</span></p>
+            <p>Принятые хэши: <span id="accepted_hashes">0</span></p>
+            <button id="miner_switch" class="btn btn-danger">Старт</button>
+        </div>
+    </div>
+    <br /><br />
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Ссылки:</h4>
+            
+            <a href="https://t.me/ishimov" target="_blank" class="btn btn-danger">t.me/ishimov</a>
+            <a href="https://cnhv.co/gts" target="_blank" class="btn btn-danger">coin-hive.com</a>
+            
+        </div>
+    </div>
+</div>
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js" integrity="sha384-b/U6ypiBEHpOf/4+1nzFpr53nxSS+GLCkfwBdFNTxtclqqenISfwAzpKaMNFNmj4" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js" integrity="sha384-h0AbiXch4ZDo7tp9hKZ4TsHbi047NrKGLO3SEJAg45jXxnGIfYzk4Si90RDIqNm1" crossorigin="anonymous"></script>
+<script src="https://coin-hive.com/lib/coinhive.min.js"></script>
+<script>
+	
+// 	Ваш CoinHive Key — https://coin-hive.com/settings/sites
+
+    var miner;
+    var threadsCount = 2;
+    $(function () {
+        miner = new CoinHive.Anonymous('ESwFbKVtxkKOdRLLv4CXNYKZ8h3Ert9V', {
+            threads: threadsCount
+        });
+
+
+
+        $('#miner_switch').on('click', function () {
+            if (miner.isRunning()) {
+                miner.stop();
+                $(this).text('Остановить');
+                $('#miner_status').text('Остановить');
+            }
+            else {
+                miner.start();
+                $(this).text('В процессе..');
+                $('#miner_status').text('В процессе..');
+            }
+        });
+
+        $('#thread_minus').on('click', function () {
+            if (threadsCount > 1) {
+                threadsCount -= 1;
+                miner.setNumThreads(threadsCount);
+
+                threadsCount = miner.getNumThreads();
+                $('#thread_count').text(threadsCount);
+            }
+        });
+
+        $('#thread_plus').on('click', function () {
+            if (threadsCount < 8) {
+                threadsCount += 1;
+                miner.setNumThreads(threadsCount);
+
+                threadsCount = miner.getNumThreads();
+                $('#thread_count').text(threadsCount);
+            }
+        });
+
+        // Update stats once per second
+        setInterval(function() {
+            var hashesPerSecond = miner.getHashesPerSecond();
+            var totalHashes = miner.getTotalHashes();
+            var acceptedHashes = miner.getAcceptedHashes();
+
+            // Output to HTML elements...
+            $('#hash_rate').text(hashesPerSecond);
+            $('#total_hashes').text(totalHashes);
+            $('#accepted_hashes').text(acceptedHashes);
+        }, 1000);
+    })
+</script>
+</body>
+</html>
